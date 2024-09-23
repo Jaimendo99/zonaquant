@@ -16,7 +16,7 @@ templ-watch:
 	
 .PHONY: dev
 dev:
-	go build -o ./tmp/main.exe ./cmd/main.go && air
+	go build -o ./tmp/main ./main.go && air
 
 .PHONY: build
 build:
