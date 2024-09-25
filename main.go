@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"zonaquant/config"
 	"zonaquant/routes"
-	"zonaquant/ui"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,14 +15,12 @@ func init() {
 		fmt.Println("error migrating:" + err.Error())
 		panic(err)
 	}
+
+	config.LoadEnvVariables()
 }
 
 func main() {
 	e := echo.New()
-
-	e.GET("/", func(c echo.Context) error {
-		return ui.Index().Render(c.Request().Context(), c.Response().Writer)
-	})
 
 	routes.DefineAuthRoutes(e)
 

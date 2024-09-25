@@ -10,6 +10,5 @@ import (
 func GetPageHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return layoutui.MainLayout("Login", authui.LoginComp()).Render(c.Request().Context(), c.Response().Writer)
-
 	}
 }

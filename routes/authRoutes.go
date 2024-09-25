@@ -8,4 +8,5 @@ import (
 
 func DefineAuthRoutes(e *echo.Echo) {
 	e.GET("/login", authhandlers.GetPageHandler())
+	e.POST("/signup", authhandlers.CreateClientAccountHandler())
 }
