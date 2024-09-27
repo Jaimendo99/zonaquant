@@ -1,11 +1,16 @@
 package authhandlers
 
 import (
+	"net/http"
+	"time"
 	"zonaquant/config"
 	dbmodels "zonaquant/models/dbmodels"
 	networkmodels "zonaquant/models/networkModels"
 	"zonaquant/ui/layout"
+	"zonaquant/ui/pages"
 
+	"github.com/a-h/templ"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,7 +26,6 @@ func CreateClientAccountHandler() echo.HandlerFunc {
 		}
 
 		db := config.DB
-
 		user := createUserPayload.ToDb()
 
 		user.Accounts = []dbmodels.Account{
@@ -34,11 +38,74 @@ func CreateClientAccountHandler() echo.HandlerFunc {
 		result := db.Create(&user)
 		if result.Error != nil {
 			c.Logger().Error(result.Error.Error())
-			return layout.FailAlert(result.Error.Error()).Render(c.Request().Context(), c.Response().Writer)
+			return layout.SimpleNotification(result.Error.Error(), true).Render(c.Request().Context(), c.Response().Writer)
 		}
 
 		c.Logger().Info("User created")
 		return layout.SuccessAlert("Usuario creado correctamente").Render(c.Request().Context(), c.Response().Writer)
+	}
+}
+
+func LoginActionHandler() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		loginPayload := networkmodels.LoginPayload{}
+
+		err := c.Bind(&loginPayload)
+		if err != nil {
+			c.Logger().Error(err)
+			c.Response().WriteHeader(http.StatusBadRequest)
+			return layout.SimpleNotification("Datos no validos", true).Render(c.Request().Context(), c.Response().Writer)
+		}
+
+		db := config.DB
+		user := dbmodels.User{}
+
+		result := db.Where("username = ?", loginPayload.Username).First(&user)
+
+		if result.Error != nil {
+			c.Logger().Error(result.Error.Error())
+			c.Response().WriteHeader(http.StatusNotFound)
+			return layout.SimpleNotification("Usuario no encontrado", true).Render(c.Request().Context(), c.Response().Writer)
+		}
+
+		if user.Password != loginPayload.Password {
+			c.Response().WriteHeader(http.StatusUnauthorized)
+			return layout.SimpleNotification("Usuario o contraseña incorrecta", true).Render(c.Request().Context(), c.Response().Writer)
+		}
+
+		token, err := config.GetJwtToken(&networkmodels.JwtClaims{
+			Sub:  user.ID,
+			Role: int(user.RoleID),
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			},
+		})
+
+		if err != nil {
+			c.Logger().Error(err)
+			c.Response().WriteHeader(http.StatusInternalServerError)
+			return layout.FailAlert("Error al generar token").Render(c.Request().Context(), c.Response().Writer)
+		}
+
+		c.SetCookie(&http.Cookie{
+			Name:   "token",
+			Value:  token,
+			MaxAge: 86400,
+		})
+
+		if user.RoleID == 1 {
+			return RenderTemplComp(pages.HxGetPage("/admin"))(c)
+		} else if user.RoleID == 2 {
+			return RenderTemplComp(pages.HxGetPage("/user"))(c)
+		} else {
+			return RenderTemplComp(pages.HxGetPage("/worker"))(c)
+		}
+	}
+}
+
+func RenderTemplComp(comp templ.Component) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return comp.Render(c.Request().Context(), c.Response().Writer)
 	}
 }
 

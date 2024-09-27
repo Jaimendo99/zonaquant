@@ -1,0 +1,30 @@
+package pages
+
+templ AdminPage() {
+	<div class="container mx-auto">
+		<h1 class="text-2xl font-bold">Admin Page</h1>
+		<p>This is the admin page</p>
+	</div>
+}
+
+templ UserPage() {
+	<div class="container mx-auto">
+		<h1 class="text-2xl font-bold">User Page</h1>
+		<p>This is the user page</p>
+	</div>
+}
+
+templ WorkerPage() {
+	<div class="container mx-auto">
+		<h1 class="text-2xl font-bold">Worker Page</h1>
+		<p>This is the worker page</p>
+	</div>
+}
+
+templ HxGetPage(path string) {
+	<div
+		hx-get={ path }
+		hx-trigger="load"
+		hx-push-url="true"
+	></div>
+}

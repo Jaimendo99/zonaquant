@@ -17,9 +17,9 @@ module.exports = {
     },
     extend: {
       colors: {
-        primary: colors.blue,
-        secondary: colors.yellow,
-        neutral: colors.gray,
+        primary: colors.orange,
+        secondary: colors.teal,
+        neutral: colors.stone,
       }
     },
   },
