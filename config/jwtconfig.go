@@ -1,6 +1,7 @@
 package config
 
 import (
+	"net/http"
 	networkmodels "zonaquant/models/networkModels"
 	"zonaquant/ui/authui"
 	"zonaquant/ui/layout"
@@ -18,6 +19,7 @@ var JwtConfig = echojwt.Config{
 	TokenLookup: "cookie:token",
 	ErrorHandler: func(e echo.Context, err error) error {
 		println(err.Error())
+		e.Response().WriteHeader(http.StatusPermanentRedirect)
 		return authui.LoginComp().Render(e.Request().Context(), e.Response().Writer)
 	},
 }

@@ -7,5 +7,5 @@ import (
 )
 
 func DefineAccountsRoutes(e *echo.Echo, m ...echo.MiddlewareFunc) {
-	e.GET("/users", accounts.GetUsersHandler())
+	e.GET("/users", accounts.GetUsersHandler(), m[0], m[1])
 }

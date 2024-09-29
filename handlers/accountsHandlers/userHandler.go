@@ -3,17 +3,21 @@ package accounts
 import (
 	"zonaquant/config"
 	models "zonaquant/models/dbmodels"
+	"zonaquant/models/uimodels"
+	"zonaquant/ui/pages"
 
 	"github.com/labstack/echo/v4"
 )
 
 func GetUsersHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// TODO verify if user is authenticated
-
 		db := config.DB
 		users := []models.User{}
-		db.Find(&users)
-		return c.JSON(200, users)
+		db.Preload("Role").Preload("Accounts.AccountType").Find(&users)
+		uiusers := []uimodels.UIuser{}
+		for _, user := range users {
+			uiusers = append(uiusers, uimodels.UserToUI(&user))
+		}
+		return pages.UserListGrid(uiusers).Render(c.Request().Context(), c.Response().Writer)
 	}
 }

@@ -56,7 +56,7 @@ func GetAdminSideBarItems() []uimodels.SideBatItemStruct {
 			ID:    1,
 			Title: "User",
 			Icon:  "person",
-			Link:  "/user",
+			Link:  "/users",
 		},
 		{
 			ID:    2,

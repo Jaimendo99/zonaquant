@@ -22,10 +22,12 @@ templ MainLayout(title string, content templ.Component) {
 				{
 					infoOpen: true,
 					sidebar: false,
-					itemSelected: 0
+					itemSelected: 0,
+					overlayOpen: false
 				}
 				 "
 			>
+				@OverlayContainer()
 				<div class="" x-show="infoOpen" id="info"></div>
 				<div class="mx-auto" id="content">
 					@content
@@ -33,12 +35,32 @@ templ MainLayout(title string, content templ.Component) {
 				@NotificationRegion()
 			</main>
 			<script>
+
+			document.body.addEventListener('keydown', function(evt) {
+				if(evt.key === "Escape"){
+					let overlay = Alpine.$data(document.querySelector("#overlay"));
+					let infoOpen = Alpine.$data(document.querySelector("#info"));
+					if(overlay.overlayOpen){
+						overlay.overlayOpen = false;
+					}else if(infoOpen.infoOpen){
+						infoOpen.infoOpen = false;
+					}
+				}
+			});
+
 			document.body.addEventListener('htmx:beforeSwap', function(evt) {
+				console.log(evt);
 				let infoOpen = Alpine.$data(document.querySelector("main"))
 				
 				if(evt.detail.xhr.status === 500){
+					console.log("Error");
 					evt.detail.isError = true;
+				}else if(evt.detail.xhr.status >= 300 && evt.detail.xhr.status < 400){
+					console.log("Redirecting");
+					evt.detail.target = htmx.find("#content");
+					evt.shouldSwap =  true;
 				}else if(evt.detail.xhr.status != 200){
+					console.log("Not 200");
 					infoOpen.infoOpen = true;
 					evt.detail.isError = false;
 					evt.detail.shouldSwap = true;

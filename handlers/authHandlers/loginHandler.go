@@ -2,6 +2,7 @@ package authhandlers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 	"zonaquant/config"
 	dbmodels "zonaquant/models/dbmodels"
@@ -30,9 +31,17 @@ func CreateClientAccountHandler() echo.HandlerFunc {
 
 		user.Accounts = []dbmodels.Account{
 			{
+				AccountNumber: generateAccountNumber(user, 1),
 				AccountTypeID: 1,
 				Balance:       0,
 			},
+		}
+		if createUserPayload.Box {
+			user.Accounts = append(user.Accounts, dbmodels.Account{
+				AccountNumber: generateAccountNumber(user, 4),
+				AccountTypeID: 4,
+				Balance:       0,
+			})
 		}
 
 		result := db.Create(&user)
@@ -111,4 +120,12 @@ func RenderTemplComp(comp templ.Component) echo.HandlerFunc {
 
 func verifyCreateUserPayload(payload networkmodels.CreateUserPayload) bool {
 	return payload.Username == "" || payload.Password == "" || payload.RoleID == 0
+}
+
+func generateAccountNumber(user dbmodels.User, accountType int) string {
+	q := 0
+	for _, r := range user.Username {
+		q += int(r)
+	}
+	return strconv.Itoa(q)[0:3] + strconv.Itoa(accountType) + strconv.Itoa(int(user.ID))
 }

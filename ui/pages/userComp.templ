@@ -1,0 +1,73 @@
+package pages
+
+import (
+	"strings"
+	"zonaquant/models/uimodels"
+)
+
+templ UserItem(user uimodels.UIuser) {
+	<li class="col-span-1 divide-y divide-neutral-200 rounded-lg bg-white shadow">
+		<div class="flex w-full items-center justify-between space-x-6 p-6">
+			<div class="flex-1 truncate">
+				<div class="flex items-center space-x-3">
+					<h3 class="truncate text-sm font-medium text-neutral-900">{ user.FullName }</h3>
+					<span class="inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+						{ user.Role }
+					</span>
+				</div>
+				<p class="mt-1 truncate text-sm text-neutral-500">{ user.Username }</p>
+			</div>
+			<img class="h-10 w-10 flex-shrink-0 rounded-full bg-neutral-300" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" alt=""/>
+		</div>
+		<div class="flex divide-x divide-neutral-200">
+			<!-- Reduced the divide-x value here -->
+			for _, account := range user.Accounts {
+				@UserAccount(account)
+			}
+		</div>
+	</li>
+}
+
+templ UserAccount(account uimodels.UIaccount) {
+	<div class="-my-3 divide-y w-full divide-gray-100 px-6 py-4 text-sm">
+		<div class="flex justify-between gap-x-4 py-3">
+			<div class="flex flex-col gap-x-2">
+				<dt class="text-gray-500 text-sm">{ account.AccountNumber }</dt>
+				<dt class="text-gray-700 text-lg">{ account.AccountType }</dt>
+			</div>
+			<dd class="flex items-center gap-x-2">
+				<div class="font-medium text-gray-900">{ account.Balance }</div>
+				<!-- Conditional balance arrow -->
+				if strings.Contains(account.Balance, "-") {
+					<span class="h-6 w-6 shrink-0 material-symbols-rounded text-red-500">
+						trending_down
+					</span>
+				} else if account.Balance == "$0.00" {
+					<span class="h-6 w-6 shrink-0 material-symbols-rounded text-yellow-500">
+						trending_flat
+					</span>
+				} else {
+					<span class="h-6 w-6 shrink-0 material-symbols-rounded text-green-700">
+						trending_up
+					</span>
+				}
+			</dd>
+		</div>
+	</div>
+}
+
+templ UserListGrid(users []uimodels.UIuser) {
+	<div class="flex gap-5 ">
+		<div class="text-3xl ms-1 font-semibold text-neutral-900">Users</div>
+		<button @click="overlayOpen=true" type="button" class="rounded-full p-1.5 w-auto bg-neutral-700 text-white shadow-sm hover:text-primary-400 hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600">
+			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+			</svg>
+		</button>
+	</div>
+	<ul role="list" class="grid grid-cols-1 mt-3 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+		for _, user := range users {
+			@UserItem(user)
+		}
+	</ul>
+}

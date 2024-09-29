@@ -14,6 +14,7 @@ type AccountType struct {
 
 type Account struct {
 	gorm.Model
+	AccountNumber    string        `gorm:"unique;not null"`
 	AccountTypeID    uint          `gorm:"not null;index"`
 	AccountType      AccountType   `gorm:"foreignKey:AccountTypeID"`
 	Balance          float64       `gorm:"not null"`
@@ -30,6 +31,8 @@ type Role struct {
 
 type User struct {
 	gorm.Model
+	Name     string    `gorm:"not null"`
+	LastName string    `gorm:"not null"`
 	Username string    `gorm:"unique;not null"`
 	Password string    `gorm:"not null"` // Ensure passwords are hashed
 	RoleID   uint      `gorm:"not null;index"`
