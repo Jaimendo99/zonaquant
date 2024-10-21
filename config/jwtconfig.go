@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"net/http"
 	networkmodels "zonaquant/models/networkModels"
 	"zonaquant/ui/authui"
@@ -13,12 +14,14 @@ import (
 
 var JwtConfig = echojwt.Config{
 	NewClaimsFunc: func(e echo.Context) jwt.Claims {
+		fmt.Println("NewClaimsFunc")
 		return &networkmodels.JwtClaims{}
 	},
 	SigningKey:  []byte("secret"),
 	TokenLookup: "cookie:token",
 	ErrorHandler: func(e echo.Context, err error) error {
-		println(err.Error())
+		e.Logger().Debug("Redirecting to login")
+		fmt.Println(err.Error())
 		e.Response().WriteHeader(http.StatusPermanentRedirect)
 		return authui.LoginComp().Render(e.Request().Context(), e.Response().Writer)
 	},
