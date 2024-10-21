@@ -30,7 +30,7 @@ templ UserItem(user uimodels.UIuser) {
 
 templ UserAccount(account uimodels.UIaccount) {
 	<div class="-my-3 divide-y w-full divide-gray-100 px-6 py-4 text-sm">
-		<div class="flex justify-between gap-x-4 py-3">
+		<div class="flex justify-between gap-x-4 py-3 flex-wrap">
 			<div class="flex flex-col gap-x-2">
 				<dt class="text-gray-500 text-sm">{ account.AccountNumber }</dt>
 				<dt class="text-gray-700 text-lg">{ account.AccountType }</dt>
@@ -59,7 +59,13 @@ templ UserAccount(account uimodels.UIaccount) {
 templ UserListGrid(users []uimodels.UIuser) {
 	<div class="flex gap-5 ">
 		<div class="text-3xl ms-1 font-semibold text-neutral-900">Users</div>
-		<button @click="overlayOpen=true" type="button" class="rounded-full p-1.5 w-auto bg-neutral-700 text-white shadow-sm hover:text-primary-400 hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600">
+		<button
+			@click="overlayOpen=true"
+			hx-get="/signup"
+			hx-target="#overlayContent"
+			type="button"
+			class="max-sm:fixed max-sm:bottom-2 max-sm:right-2 max-sm:p-3 rounded-full p-1.5 w-auto bg-neutral-700 text-white shadow-sm hover:text-primary-400 hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+		>
 			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
 			</svg>

@@ -11,17 +11,26 @@ type CreateUserPayload struct {
 	LastName string `json:"lastName" form:"lastName"`
 	Username string `json:"username" form:"username"`
 	Password string `json:"password" form:"password"`
-	RoleID   int    `json:"roleId" form:"roleId"`
+	RoleName string `json:"rolename" form:"rolename"`
 	Box      bool   `json:"box" form:"box"`
 }
 
 func (p *CreateUserPayload) ToDb() models.User {
+	rolId := 0
+	switch p.RoleName {
+	case "Admin":
+		rolId = 1
+	case "User":
+		rolId = 2
+	case "Worker":
+		rolId = 3
+	}
 	return models.User{
 		Name:     p.Name,
 		LastName: p.LastName,
 		Username: p.Username,
 		Password: p.Password,
-		RoleID:   uint(p.RoleID),
+		RoleID:   uint(rolId),
 	}
 }
 

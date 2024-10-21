@@ -12,4 +12,5 @@ func DefineAuthRoutes(e *echo.Echo, m ...echo.MiddlewareFunc) {
 	e.GET("/login", authhandlers.GetPageHandler())
 	e.POST("/login", authhandlers.LoginActionHandler())
 	e.POST("/signup", authhandlers.CreateClientAccountHandler())
+	e.GET("/signup", authhandlers.GetRegisterPageHandler())
 }

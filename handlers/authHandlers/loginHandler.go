@@ -21,9 +21,9 @@ func CreateClientAccountHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		createUserPayload := networkmodels.CreateUserPayload{}
 		err := c.Bind(&createUserPayload)
-		if err != nil || verifyCreateUserPayload(createUserPayload) {
+		if verifyCreateUserPayload(createUserPayload) || err != nil {
 			c.Logger().Error(err)
-			return layout.FailAlert("Datos no validos").Render(c.Request().Context(), c.Response().Writer)
+			return layout.SimpleNotification("Datos no validos", true).Render(c.Request().Context(), c.Response().Writer)
 		}
 
 		db := config.DB
@@ -51,7 +51,7 @@ func CreateClientAccountHandler() echo.HandlerFunc {
 		}
 
 		c.Logger().Info("User created")
-		return layout.SuccessAlert("Usuario creado correctamente").Render(c.Request().Context(), c.Response().Writer)
+		return layout.SimpleNotification("Usuario creado", false).Render(c.Request().Context(), c.Response().Writer)
 	}
 }
 
@@ -119,7 +119,7 @@ func RenderTemplComp(comp templ.Component) echo.HandlerFunc {
 }
 
 func verifyCreateUserPayload(payload networkmodels.CreateUserPayload) bool {
-	return payload.Username == "" || payload.Password == "" || payload.RoleID == 0
+	return payload.Username == "" || payload.Password == "" || payload.RoleName == "" || payload.Name == "" || payload.LastName == ""
 }
 
 func generateAccountNumber(user dbmodels.User, accountType int) string {

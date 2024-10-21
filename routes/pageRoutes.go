@@ -12,5 +12,4 @@ func DefinePageRoutes(e *echo.Echo, m ...echo.MiddlewareFunc) {
 	e.GET("/user", pagehandlers.GetUserPage(), m[0], m[2])
 	e.GET("/worker", pagehandlers.GetWorkerPage(), m[0], m[3])
 	e.GET("/", pagehandlers.GetShellPage())
-
 }

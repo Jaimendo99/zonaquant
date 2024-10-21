@@ -2,6 +2,7 @@ package pagehandlers
 
 import (
 	"zonaquant/models/uimodels"
+	"zonaquant/ui/authui"
 	"zonaquant/ui/layout"
 	"zonaquant/ui/pages"
 
@@ -41,6 +42,11 @@ func GetShellPage() echo.HandlerFunc {
 			return layout.MainLayout("Shell", layout.ApplicationShell(GetAdminSideBarItems())).Render(c.Request().Context(), c.Response().Writer)
 		}
 		return layout.ApplicationShell(GetAdminSideBarItems()).Render(c.Request().Context(), c.Response().Writer)
+	}
+}
+func GetPageHandler() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return layout.MainLayout("Login", authui.LoginComp()).Render(c.Request().Context(), c.Response().Writer)
 	}
 }
 
