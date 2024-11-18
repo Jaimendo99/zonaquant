@@ -5,16 +5,14 @@ templ OverlayContainer() {
 		<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 		<div class="fixed inset-0 z-10 w-screen overflow-y-auto">
 			<div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-				<div id="overlay" class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-2 sm:w-full sm:max-w-lg sm:p-6">
+				<div @click.outside="overlayOpen=false" id="overlay" class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-2 sm:w-full sm:max-w-lg sm:p-6">
 					<div class="grid-rows-3">
 						<div class="flex justify-end h-5 ">
 							<span @click="overlayOpen=false" class="h-5 w-5 shrink-0 hover:cursor-pointer hover:text-red-600 material-symbols-rounded text-neutral-500">
 								close
 							</span>
 						</div>
-						<div id="overlayContent" class="p-5">
-							<!-- Overlay content will be inserted here -->
-						</div>
+						<div id="overlayContent" class="p-5"></div>
 					</div>
 				</div>
 			</div>

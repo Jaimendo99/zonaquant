@@ -18,17 +18,16 @@ type Account struct {
 	AccountTypeID    uint          `gorm:"not null;index"`
 	AccountType      AccountType   `gorm:"foreignKey:AccountTypeID"`
 	Balance          float64       `gorm:"not null"`
-	Users            []User        `gorm:"many2many:users_accounts;constraint:OnDelete:CASCADE;"`
+	UserID           uint          `gorm:"not null;index"`
+	User             User          `gorm:"foreignKey:UserID"`
 	TransactionsFrom []Transaction `gorm:"foreignKey:FromAccountID"`
 	TransactionsTo   []Transaction `gorm:"foreignKey:ToAccountID"`
 }
-
 type Role struct {
 	gorm.Model
 	Role  string `gorm:"unique;not null"`
 	Users []User `gorm:"foreignKey:RoleID"`
 }
-
 type User struct {
 	gorm.Model
 	Name     string    `gorm:"not null"`
@@ -37,7 +36,7 @@ type User struct {
 	Password string    `gorm:"not null"` // Ensure passwords are hashed
 	RoleID   uint      `gorm:"not null;index"`
 	Role     Role      `gorm:"foreignKey:RoleID"`
-	Accounts []Account `gorm:"many2many:users_accounts;constraint:OnDelete:CASCADE;"`
+	Accounts []Account `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
 }
 
 type UsersAccounts struct {

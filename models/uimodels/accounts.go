@@ -8,6 +8,7 @@ import (
 type UIuser struct {
 	FullName string
 	Username string
+	ID       uint64
 	Role     string
 	Accounts []UIaccount
 }
@@ -23,6 +24,7 @@ func UserToUI(u *models.User) UIuser {
 	uiuser := UIuser{
 		FullName: u.Name + " " + u.LastName,
 		Username: u.Username,
+		ID:       uint64(u.ID),
 		Role:     u.Role.Role,
 	}
 
@@ -31,9 +33,17 @@ func UserToUI(u *models.User) UIuser {
 			AccountID:     strconv.FormatInt(int64(account.ID), 10),
 			AccountNumber: account.AccountNumber,
 			AccountType:   account.AccountType.AccountType,
-			Balance:       "$" + strconv.FormatFloat(float64(account.Balance), 'f', 2, 64),
+			Balance:       balanceToString(account.Balance),
 		})
 	}
 
 	return uiuser
+}
+
+func balanceToString(balance float64) string {
+	if balance >= 0 {
+		return "$" + strconv.FormatFloat(balance, 'f', 2, 64)
+	} else {
+		return "-$" + strconv.FormatFloat(-balance, 'f', 2, 64)
+	}
 }

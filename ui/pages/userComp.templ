@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"strconv"
 	"strings"
 	"zonaquant/models/uimodels"
 )
@@ -17,7 +18,45 @@ templ UserItem(user uimodels.UIuser) {
 				</div>
 				<p class="mt-1 truncate text-sm text-neutral-500">{ user.Username }</p>
 			</div>
-			<img class="h-10 w-10 flex-shrink-0 rounded-full bg-neutral-300" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" alt=""/>
+			<div class="flex items-center gap-1 ">
+				<img class="h-10 w-10 flex-shrink-0 rounded-full bg-neutral-300" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60" alt=""/>
+				<div class="relative ml-auto" x-data="{open:false}">
+					<button
+						@Click="open=!open"
+						type="button"
+						class="inline-flex size-8 items-center justify-center rounded-full bg-transparent bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+					>
+						<span class="sr-only">Open options</span>
+						<svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+							<path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"></path>
+						</svg>
+					</button>
+					<div x-show="open" @click.outside="open=false" x-transition class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="options-menu-0-button" tabindex="-1">
+						<a
+							hx-get={ "/resetpass/" + strconv.FormatUint(user.ID, 10) }
+							hx-target="#notiRegion"
+							class="block px-3 py-1 text-sm/6 text-gray-700 cursor-pointer hover:bg-neutral-300"
+							@click="open=false;infoOpen=true"
+							role="menuitem"
+							tabindex="-1"
+							id="options-menu-0-item-2"
+						>
+							Reset password<span class="sr-only">, Tuple</span>
+						</a>
+						<a
+							hx-delete={ "/users/" + strconv.FormatUint(user.ID, 10) }
+							hx-target="#shellcontent"
+							class="block px-3 py-1 text-sm/6 text-red-700 cursor-pointer hover:bg-neutral-300"
+							@click="open=false"
+							role="menuitem"
+							tabindex="-1"
+							id="options-menu-0-item-1"
+						>
+							Borrar Usuario<span class="sr-only">, Tuple</span>
+						</a>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="flex divide-x divide-neutral-200">
 			<!-- Reduced the divide-x value here -->
@@ -76,4 +115,25 @@ templ UserListGrid(users []uimodels.UIuser) {
 			@UserItem(user)
 		}
 	</ul>
+}
+
+templ PasswordReseted(newPassWord string) {
+	<div class="flex flex-row gap-2 items-center justify-center">
+		<p class="text-sm font-medium text-gray-900 ">Contraseña reseteada a </p>
+		<p id="newPassWord" class="text-sm  font-bold text-neutral-800-900 ">{ newPassWord } </p>
+		<span @click="copyToClipboard()" class="h-5 w-5 shrink-0 material-symbols-rounded text-neutral-700 cursor-pointer hover:text-primary-600">
+			content_copy
+		</span>
+	</div>
+	<script>
+		function copyToClipboard() {
+			const el = document.createElement('textarea');
+			el.value = document.getElementById('newPassWord').innerText;
+			document.body.appendChild(el);
+			el.select();
+			document.execCommand('copy');
+			document.body.removeChild(el);
+			alert('Copied to clipboard');
+		}
+	</script>
 }

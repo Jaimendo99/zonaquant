@@ -50,7 +50,11 @@ templ AddUserForm() {
 	<h1 class="text-3xl font-semibold text-neutral-900">Crear cuenta</h1>
 	<hr class="my-4"/>
 	<br class="my-2"/>
-	<form hx-post="/signup" hx-target="#notiRegion" autocomplete="off">
+	<form
+		hx-post="/signup"
+		hx-target="#shellcontent"
+		autocomplete="off"
+	>
 		<div class="flex gap-4 justify-between ">
 			@BasicTextInput("name", "text", "name", "Name", "Name")
 			@BasicTextInput("lastname", "text", "lastname", "Lastname", "Apellido")
@@ -72,7 +76,7 @@ templ AddUserForm() {
 		</div>
 		<br class="my-4"/>
 		<button
-			@click="infoOpen = true"
+			@click="overlayOpen=false"
 			type="submit"
 			class="flex w-full justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
 		>

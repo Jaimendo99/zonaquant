@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 	"zonaquant/config"
+	accounts "zonaquant/handlers/accountsHandlers"
 	dbmodels "zonaquant/models/dbmodels"
 	networkmodels "zonaquant/models/networkModels"
 	"zonaquant/ui/layout"
-	"zonaquant/ui/pages"
 
 	"github.com/a-h/templ"
 	"github.com/golang-jwt/jwt/v5"
@@ -23,7 +23,8 @@ func CreateClientAccountHandler() echo.HandlerFunc {
 		err := c.Bind(&createUserPayload)
 		if verifyCreateUserPayload(createUserPayload) || err != nil {
 			c.Logger().Error(err)
-			return layout.SimpleNotification("Datos no validos", true).Render(c.Request().Context(), c.Response().Writer)
+			c.Response().WriteHeader(http.StatusBadRequest)
+			return layout.SimpleNotification("Datos no validos", true, nil).Render(c.Request().Context(), c.Response().Writer)
 		}
 
 		db := config.DB
@@ -47,11 +48,12 @@ func CreateClientAccountHandler() echo.HandlerFunc {
 		result := db.Create(&user)
 		if result.Error != nil {
 			c.Logger().Error(result.Error.Error())
-			return layout.SimpleNotification(result.Error.Error(), true).Render(c.Request().Context(), c.Response().Writer)
+			c.Response().WriteHeader(http.StatusInternalServerError)
+			return layout.SimpleNotification(result.Error.Error(), true, nil).Render(c.Request().Context(), c.Response().Writer)
 		}
 
 		c.Logger().Info("User created")
-		return layout.SimpleNotification("Usuario creado", false).Render(c.Request().Context(), c.Response().Writer)
+		return accounts.GetUsersHandler()(c)
 	}
 }
 
@@ -63,7 +65,7 @@ func LoginActionHandler() echo.HandlerFunc {
 		if err != nil {
 			c.Logger().Error(err)
 			c.Response().WriteHeader(http.StatusBadRequest)
-			return layout.SimpleNotification("Datos no validos", true).Render(c.Request().Context(), c.Response().Writer)
+			return layout.SimpleNotification("Datos no validos", true, nil).Render(c.Request().Context(), c.Response().Writer)
 		}
 
 		db := config.DB
@@ -74,12 +76,12 @@ func LoginActionHandler() echo.HandlerFunc {
 		if result.Error != nil {
 			c.Logger().Error(result.Error.Error())
 			c.Response().WriteHeader(http.StatusNotFound)
-			return layout.SimpleNotification("Usuario no encontrado", true).Render(c.Request().Context(), c.Response().Writer)
+			return layout.SimpleNotification("Usuario no encontrado", true, nil).Render(c.Request().Context(), c.Response().Writer)
 		}
 
 		if user.Password != loginPayload.Password {
 			c.Response().WriteHeader(http.StatusUnauthorized)
-			return layout.SimpleNotification("Usuario o contraseña incorrecta", true).Render(c.Request().Context(), c.Response().Writer)
+			return layout.SimpleNotification("Usuario o contraseña incorrecta", true, nil).Render(c.Request().Context(), c.Response().Writer)
 		}
 
 		token, err := config.GetJwtToken(&networkmodels.JwtClaims{
@@ -102,13 +104,7 @@ func LoginActionHandler() echo.HandlerFunc {
 			MaxAge: 86400,
 		})
 
-		if user.RoleID == 1 {
-			return RenderTemplComp(pages.HxGetPage("/admin"))(c)
-		} else if user.RoleID == 2 {
-			return RenderTemplComp(pages.HxGetPage("/user"))(c)
-		} else {
-			return RenderTemplComp(pages.HxGetPage("/worker"))(c)
-		}
+		return c.Redirect(http.StatusFound, "/")
 	}
 }
 

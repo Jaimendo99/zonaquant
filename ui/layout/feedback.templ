@@ -58,7 +58,7 @@ templ FailAlert(message string) {
 	</div>
 }
 
-templ SimpleNotification(message string, fail bool) {
+templ SimpleNotification(message string, fail bool, component templ.Component) {
 	<div class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
 		<div class="p-4">
 			<div class="flex items-start">
@@ -74,7 +74,11 @@ templ SimpleNotification(message string, fail bool) {
 					}
 				</div>
 				<div class="ml-3 w-0 flex-1 pt-0.5">
-					<p class="text-sm font-medium text-gray-900">{ message } </p>
+					if component != nil {
+						@component
+					} else {
+						<p class="text-sm font-medium text-gray-900">{ message } </p>
+					}
 				</div>
 				<div class="ml-4 flex flex-shrink-0">
 					<button
